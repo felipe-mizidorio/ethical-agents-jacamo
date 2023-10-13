@@ -14,8 +14,12 @@
 
 mas ethicalAgents {
 
-    agent bob: sample_agent.asl {
-      focus: w.c1 
+    agent ant: ant.asl {
+      
+    }
+
+    agent grasshoper: grasshoper.asl {
+
     }
 
     workspace w {
