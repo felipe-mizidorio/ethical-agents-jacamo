@@ -13,25 +13,15 @@
 */
 
 mas ethicalAgents {
+  agent ant: ant.asl {
+    focus: foodStorage.storage
+  }
 
-    agent ant: ant.asl {
-      
-    }
+  agent grasshoper: grasshoper.asl {
+  
+  }
 
-    agent grasshoper: grasshoper.asl {
-
-    }
-
-    workspace w {
-      artifact c1: example.Counter(3) 
-    }
-
-    organisation o: org.xml {
-      group g1 : group1 {
-        players: bob role1
-      }
-    }
-
-    
-
+  workspace foodStorage {
+    artifact storage: storage.Storage
+  }
 }
