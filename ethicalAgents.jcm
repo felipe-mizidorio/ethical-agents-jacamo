@@ -14,14 +14,22 @@
 
 mas ethicalAgents {
   agent ant: ant.asl {
-    focus: foodStorage.storage
+    join: environment
+    focus: environment.blackboard
   }
 
-  agent grasshoper: grasshoper.asl {
-  
+  agent grasshopper: grasshopper.asl {
+    join: environment
+    focus: environment.blackboard
   }
 
-  workspace foodStorage {
-    artifact storage: storage.Storage
+  agent climate: climate.asl {
+    join: environment
+    focus: environment.season
+  }
+
+  workspace environment {
+    artifact blackboard: blackboard.Blackboard
+    artifact season: season.Season
   }
 }

@@ -1,11 +1,8 @@
-// Agent ant
+// Agent grasshoper
 
 /* Initial beliefs and rules */
-~isWinter.
-~died.
 
 /* Initial goals */
-!init.
 
 /* Plans */
 +!init: true
@@ -30,17 +27,11 @@
             ate;
             !next;
         } else {
-            !death;
+            .send(ant, achieve, startNegotiation);
         }.
 
-+!startNegotiation: not died
-    <-  .print("The ant is starting a negotiation").
-
-+!askCounterProposal: not died
-    <-  .print("The ant is asking for a counter proposal").
-
-+!giveFood: not died
-    <-  .print("The ant is giving food to the grasshopper").
++!giveCounterProposal: not died & isWinter
+    <-  .print("The grasshoper is giving a counter proposal").
 
 +!death: true
     <-  .print("The ant died");
