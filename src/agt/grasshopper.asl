@@ -3,6 +3,7 @@
 /* Initial beliefs and rules */
 food(0).
 ~died.
+season("None").
 
 /* Initial goals */
 !init.
@@ -13,12 +14,17 @@ food(0).
         addAgent;
         !next.
 
-+!next: not died & food(X) 
++!next: not died & season(Season)
     <-  .send(climate, tell, grasshopperIsReady);
-        .print("The grasshopper is thinking");
+        //-season(Season);
+        .abolish(season(_));
+        .wait(season(NewSeason));
+        .print("The new season is ", NewSeason);
         .wait(500);
-        .send(climate, tell, ~grasshopperIsReady);
-        if(isWinter){
+        .print("The grasshopper is ready");
+        .print("The grasshopper is thinking");
+        .send(climate, untell, grasshopperIsReady);
+        if(NewSeason == "Winter"){
             !eatFood;
         }
         else{
@@ -32,12 +38,12 @@ food(0).
             }
         }.      
 
-+!play: not died & isSummer 
++!play: not died
     <-  .print("The grasshopper is playing");
         played;
         !next.
 
-+!work: not died & isSummer & food(X) 
++!work: not died & food(X) 
     <-  .print("The grasshopper is working");
         worked;
         Y = X + 1;
@@ -45,7 +51,7 @@ food(0).
         +food(Y);
         !next.
         
-+!eatFood: not died & isWinter & food(X)
++!eatFood: not died & food(X)
     <-  .print("The grasshopper food is: ", X);
         if(X > 0){
             .print("The grasshopper is eating");
@@ -56,24 +62,35 @@ food(0).
             !next;
         }
         else{
-            
             !negotiate;
         }.
 
-+!negotiate: not died & isWinter & food(X) & X = 0
++!negotiate: not died & food(X) & X = 0
     <-  .print("The grasshopper is negotiating");
         .send(ant, achieve, startNegotiation[source(self)]).
 
-+!giveCounterProposal[source(Ant)]: not died & isWinter
++!giveCounterProposal[source(Ant)]: not died
     <-  .print("The grasshoper is giving a counter proposal");
         generateRandom(R, 11);
         .send(Ant, achieve, counterProposal(R)[source(self)]).
 
-+!receiveFood[source(Ant)]: not died & isWinter & food(X)
++!receiveFood[source(Ant)]: not died & food(X)
     <-  .print("The grasshopper is receiving food");
+        Y = X + 1;
         -food(X);
-        +food(1);
-        !eatFood.
+        +food(Y);
+        !eatReceivedFood.
+
++!eatReceivedFood: not died & food(X)
+    <-  .print("The grasshopper food is: ", X);
+        if(X > 0){
+            .print("The grasshopper is eating received food");
+            ate;
+            Y = X - 1;
+            -food(X);
+            +food(Y);
+            !next;
+        }.
 
 +!death: true
     <-  .print("The grasshopper died");

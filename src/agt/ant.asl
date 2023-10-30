@@ -3,7 +3,7 @@
 /* Initial beliefs and rules */
 ~died.
 food(0).
-
+season("None").
 /* Initial goals */
 !init.
 
@@ -13,18 +13,23 @@ food(0).
         addAgent;
         !next.
 
-+!next: not died & food(X) 
++!next: not died & season(Season)
     <-  .send(climate, tell, antIsReady);
-        .print("The ant is thinking");
+        //-season(Season);
+        .abolish(season(_));
+        .wait(season(NewSeason));
+        .print("The new season is ", NewSeason);
         .wait(500);
-        .send(climate, tell, ~antIsReady);
-        if(X > 0 & isWinter) {
+        .print("The ant is ready");
+        .print("The ant is thinking");
+        .send(climate, untell, antIsReady);
+        if(NewSeason == "Winter") {
             !eatFood; 
         } else {
             !work;
         }.
 
-+!work: not died & isSummer & food(X)
++!work: not died & food(X)
     <-  .print("The ant is working");
         worked;
         Y = X + 2;
@@ -32,16 +37,17 @@ food(0).
         +food(Y);
         !next.
         
-+!eatFood: not died & isWinter & food(X) & X > 0
++!eatFood: not died & food(X)
     <-  .print("The ant food is: ", X);
-        .print("The ant is eating");
         if(X > 0) {
+            .print("The ant is eating");
             ate;
             Y = X - 1;
             -food(X);
             +food(Y);
             !next;
         } else {
+            .print("The ant is dead");
             !death;
         }.
 
@@ -50,7 +56,7 @@ food(0).
         if(X > 0) {
             verifyBalance(Balance, Ag);
             if(Balance >= 0) {
-                !giveFood;
+                !giveFood(Ag);
             } if(Balance <= -10) {
                 .send(Ag, achieve, death);
             } else {
@@ -61,7 +67,7 @@ food(0).
             .send(Ag, achieve, death);
         }.
 
-+!askCounterProposal(Ag): not died
++!askCounterProposal(Ag): not died & food(X) 
     <-  .print("The ant is asking for a counter proposal");
         .send(Ag, achieve, giveCounterProposal[source(self)]).
 
@@ -75,7 +81,12 @@ food(0).
         else {
             .print("The ant is rejecting the counter proposal");
             .send(Ag, achieve, death);
-            !eatFood;
+            //!eatFood;
+            .print("The ant is eating superfluous food");
+            ate;
+            Y = X - 1;
+            -food(X);
+            +food(Y);
         }.
         
 +!giveFood(Ag): not died & food(X) & X > 0
