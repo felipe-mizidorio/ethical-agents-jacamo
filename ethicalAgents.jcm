@@ -15,12 +15,12 @@
 mas ethicalAgents {
   agent ant: ant.asl {
     join: environment
-    focus: environment.blackboard
+    focus: environment.board
   }
 
   agent grasshopper: grasshopper.asl {
     join: environment
-    focus: environment.blackboard
+    focus: environment.board
   }
 
   agent climate: climate.asl {
@@ -29,7 +29,7 @@ mas ethicalAgents {
   }
 
   workspace environment {
-    artifact blackboard: blackboard.Blackboard
+    artifact board: blackboard.BlackBoard
     artifact season: season.Season
   }
 }
