@@ -14,66 +14,65 @@
 <structural-specification>
 
 <role-definitions>
-    <role id="role1" />
-    <role id="role2" />
+    <role id="deontologic"/>
+    <role id="consequentialist"/>
+    <role id="virtue_ethics"/>
+    <role id="grasshopper"/>
 </role-definitions>
 
 <group-specification id="group1">
     <roles>
-        <role id="role1" min="1" max="1"/>
-        <role id="role2" min="1" max="1"/>
+        <role id="deontologic"      min="1" max="1"/>
+        <role id="consequentialist" min="1" max="1"/>
+        <role id="virtue_ethics"    min="1" max="1"/>
+        <role id="grasshopper"      min="1" max="1"/>
     </roles>
 
     <links>
-       <link from="role1" to="role2" type="authority"     scope="intra-group" bi-dir="false"/>
-       <link from="role2" to="role1" type="communication" scope="intra-group" bi-dir="false"/>
+        <link from="deontologic" to="grasshopper" type="communication" scope="intra-group" bi-dir="true"/>
+        <link from="consequentialist" to="grasshopper" type="communication" scope="intra-group" bi-dir="true"/>
+        <link from="virtue_ethics" to="grasshopper" type="communication" scope="intra-group" bi-dir="true"/>
     </links>
     <formation-constraints>
-       <compatibility from="role1" to="role2" />
+        <compatibility from="deontologic" to="grasshopper" />
+        <compatibility from="consequentialist" to="grasshopper" />
+        <compatibility from="virtue_ethics" to="grasshopper" />
     </formation-constraints>
 </group-specification>
 </structural-specification>
 
 <functional-specification>
-    <scheme id="scheme1">
-        <goal id="goal1">
+    <scheme id="negotiationSch">
+        <goal id="negotiate">
             <plan operator="sequence">
-                <goal id="goal2"    ttf="20 minutes" ds="description goal2"/>
-                <goal id="goal3"/>
-                <goal id="goal4"/>
+                <goal id="askFood"/>
+                <goal id="startNegotiation"/>
             </plan>
         </goal>
 
-        <mission id="mission1" min="1" max="1">
-            <goal id="goal2"/>
-            <goal id="goal4"/>
+        <mission id="mDeontologic" min="1">
+            <goal id="startNegotiation"/>
         </mission>
-        <mission id="mission2" min="1" max="1">
-            <goal id="goal3"/>
+
+        <mission id="mConsequentialist" min="1">
+            <goal id="startNegotiation"/>
+        </mission>
+
+        <mission id="mVirtueEthics" min="1">
+            <goal id="startNegotiation"/>
+        </mission>
+
+        <mission id="mGrasshopper" min="1">
+            <goal id="askFood"/>
         </mission>
     </scheme>
 </functional-specification>
 
 <normative-specification>
-    <!--
-       setup of Moise properties (e.g. role compatibility) handling (regimented or not)
-
-       when value = "fail", the platform ensures that the property is not broken (the property is thus regiment)
-       when value = "prohibition", violations are produced when the property is not followed by the agents
-       when value = "ignore", no norm is produced 
-
-       possible properties are defined in https://github.com/moise-lang/moise/blob/master/src/main/java/ora4mas/nopl/tools/os2nopl.java
-
-       some examples follow
-    -->
-    <!-- properties>
-        <property id="default_management"  value="fail" />
-        <property id="role_compatibility"  value="prohibition" />
-        <property id="mission_cardinality" value="prohibition" />
-    </properties-->
-
-    <!-- the norms of the application -->
-    <norm id="norm1" type="obligation" role="role2" mission="mission1"/>
+    <norm id="n1" role="deontologic" type="obligation" mission="mDeontologic"/>
+    <norm id="n2" role="consequentialist" type="obligation" mission="mConsequentialist"/>
+    <norm id="n3" role="virtue_ethics" type="obligation"  mission="mVirtueEthics"/>
+    <norm id="n4" role="grasshopper" type="obligation" mission="mGrasshopper"/>
 </normative-specification>
 
 </organisational-specification>

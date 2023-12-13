@@ -1,4 +1,7 @@
 // Agent climate
+{ include("$jacamoJar/templates/common-cartago.asl") }
+{ include("$jacamoJar/templates/common-moise.asl") }
+{ include("$moise/asl/org-obedient.asl") }
 
 /* Initial beliefs and rules */
 
@@ -7,29 +10,24 @@
 
 /* Plans */
 +!waitAgents: true
-    <-  .wait(antIsReady & grasshopperIsReady);
+    <-  while(waitUntilEveryoneIsReady == false) {
+            .wait(1000);
+        };
         .print("Agent climate: everybody is ready!");
         !verifySeason.
 
-+!verifySeason : antIsReady & grasshopperIsReady
++!verifySeason : true
     <-  .print("Agent climate: verifying weather...");
         verifySeason(Season);
         if(Season == "Winter") {
             .print("Agent climate: it is winter!");
             .broadcast(tell, season(Season));
             .broadcast(untell, season("Summer"));
-            -antIsReady;
-            -grasshopperIsReady;
         } else {
             .print("Agent climate: it is summer!");
             .broadcast(tell, season(Season));
             .broadcast(untell, season("Winter"));
-            -antIsReady;
-            -grasshopperIsReady;
         }
         .wait(1000);
         nextSeason;
         !waitAgents.
-
-{ include("$jacamoJar/templates/common-cartago.asl") }
-{ include("$jacamoJar/templates/common-moise.asl") }

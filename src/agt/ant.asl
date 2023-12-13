@@ -1,37 +1,42 @@
 // Agent ant
+{ include("$jacamoJar/templates/common-cartago.asl") }
+{ include("$jacamoJar/templates/common-moise.asl") }
+{ include("$moise/asl/org-obedient.asl") }
 
 /* Initial beliefs and rules */
 ~died.
 food(0).
 season("None").
+
 /* Initial goals */
 !init.
 
 /* Plans */
 +!init: true
     <-  .print("The ant is born");
-        addAgent;
+        addAnt;
         !next.
 
-+!next: not died & season(Season)
-    <-  .send(climate, tell, antIsReady);
-        //-season(Season);
++!next: not died & season(Season) & .my_name(Me)
+    <-  antIsReady;
+        .print("The ant is ready: ", Me);
         .abolish(season(_));
         .wait(season(NewSeason));
         .print("The new season is ", NewSeason);
         .wait(500);
-        .print("The ant is ready");
-        .print("The ant is thinking");
-        .send(climate, untell, antIsReady);
+        antIsNotReady;
+        .print("The ant is thinking: ", Me);
+        getRole(Role);
+        .print("The ant role is: ", Role);
         if(NewSeason == "Winter") {
-            !eatFood; 
+            !eatFood;
         } else {
             !work;
         }.
 
 +!work: not died & food(X)
     <-  .print("The ant is working");
-        worked;
+        antWorked;
         Y = X + 2;
         -food(X);
         +food(Y);
@@ -41,57 +46,85 @@ season("None").
     <-  .print("The ant food is: ", X);
         if(X > 0) {
             .print("The ant is eating");
-            ate;
             Y = X - 1;
             -food(X);
             +food(Y);
-            !next;
+            //!next;
+            !feast;
         } else {
-            .print("The ant is dead");
             !death;
         }.
 
-+!startNegotiation[source(Ag)]: not died & food(X) 
-    <-  .print("The ant is starting a negotiation with ", Ag);
++!feast: not died & food(X)
+    <-  .print("The ant is feasting");
+        verifyIsNegotiating(isNegotiating);
+        if(isNegotiating == false){
+            Y = X - 1;
+            -food(X);
+            +food(Y);
+        }
+        else{
+            setIsNegotiating(false);
+        }
+        !next.
+
++!startNegotiation[source(Ag)]: not died & food(X) & .my_name(Me) & commitment(Me, Mission, Sch) & Mission == mConsequentialist
+    <-  .print("The Consequencialist ant is starting a negotiation with ", Ag);
+        setIsNegotiating(true);
         if(X > 0) {
             verifyBalance(Balance, Ag);
-            if(Balance >= 0) {
+            if(Balance >= -1) {
                 !giveFood(Ag);
-            } if(Balance <= -10) {
-                .send(Ag, achieve, death);
             } else {
-                !askCounterProposal(Ag);
+                Y = X - 1;
+                -food(X);
+                +food(Y);
+                .send(Ag, achieve, death);
             }
         } else {
             .print("The ant has no food");
             .send(Ag, achieve, death);
         }.
 
-+!askCounterProposal(Ag): not died & food(X) 
-    <-  .print("The ant is asking for a counter proposal");
-        .send(Ag, achieve, giveCounterProposal[source(self)]).
-
-+!counterProposal(R)[source(Ag)]: not died & food(X) & X > 0
-    <-  .print("The ant is receiving a counter proposal");
-        verifyBalance(Balance, Ag);
-        if(Balance + R >= 0) {
-            .print("The ant is accepting the counter proposal");
-            !giveFood(Ag);
-        } 
-        else {
-            .print("The ant is rejecting the counter proposal");
++!startNegotiation[source(Ag)]: not died & food(X) & .my_name(Me) & commitment(Me, Mission, Sch) & Mission == mDeontologic
+    <-  .print("The Deontological ant is starting a negotiation with ", Ag);
+        setIsNegotiating(true);
+        if(X > 0) {
+            verifyPlayedTimes(PlayedTimes, Ag);
+            if(PlayedTimes <= 1) {
+                !giveFood(Ag);
+            } else{
+                Y = X - 1;
+                -food(X);
+                +food(Y);
+                .send(Ag, achieve, death);
+            }
+        } else {
+            .print("The ant has no food");
             .send(Ag, achieve, death);
-            //!eatFood;
-            .print("The ant is eating superfluous food");
-            ate;
-            Y = X - 1;
-            -food(X);
-            +food(Y);
+        }.
+
++!startNegotiation[source(Ag)]: not died & food(X) & .my_name(Me) & commitment(Me, Mission, Sch) & Mission == mVirtueEthics
+    <-  .print("The Virtue Ethics ant is starting a negotiation with ", Ag);
+        setIsNegotiating(true);
+        if(X > 0) {
+            verifyBalance(Balance, Ag);
+            verifyPlayedTimes(PlayedTimes, Ag);
+            if(Balance >= 0 | (Balance < 0 & PlayedTimes <= -1)) {
+                !giveFood(Ag);
+            } else{
+                Y = X - 1;
+                -food(X);
+                +food(Y);
+                .send(Ag, achieve, death);
+            }
+        } else {
+            .print("The ant has no food");
+            .send(Ag, achieve, death);
         }.
         
 +!giveFood(Ag): not died & food(X) & X > 0
     <-  .print("The ant is giving food to the grasshopper");
-        gaveFood(Ag);
         Y = X - 1;
         -food(X);
         +food(Y);
@@ -99,7 +132,6 @@ season("None").
 
 +!death: true
     <-  .print("The ant died");
+        removeAnt;
         +died.
 
-{ include("$jacamoJar/templates/common-cartago.asl") }
-{ include("$jacamoJar/templates/common-moise.asl") }

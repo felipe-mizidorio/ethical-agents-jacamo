@@ -13,23 +13,39 @@
 */
 
 mas ethicalAgents {
-  agent ant: ant.asl {
-    join: environment
-    focus: environment.board
+  agent antDeontologic: ant.asl {
+    focus: w.board
+  }
+
+  agent antConsequentialist: ant.asl {
+    focus: w.board
+  }
+
+  agent antVirtueEthics: ant.asl {
+    focus: w.board
   }
 
   agent grasshopper: grasshopper.asl {
-    join: environment
-    focus: environment.board
+    focus: w.board
   }
 
   agent climate: climate.asl {
-    join: environment
-    focus: environment.season
+    focus: w.season, w.board
   }
 
-  workspace environment {
+  workspace w {
     artifact board: blackboard.BlackBoard
     artifact season: season.Season
+  }
+
+  organisation o: org.xml {
+    group g1: group1 {
+      responsible-for: s1
+      players: antDeontologic deontologic
+               antConsequentialist consequentialist
+               antVirtueEthics virtue_ethics
+               grasshopper grasshopper
+    }
+    scheme s1: negotiationSch
   }
 }

@@ -1,4 +1,7 @@
 // Agent grasshoper
+{ include("$jacamoJar/templates/common-cartago.asl") }
+{ include("$jacamoJar/templates/common-moise.asl") }
+{ include("$moise/asl/org-obedient.asl") }
 
 /* Initial beliefs and rules */
 food(0).
@@ -11,41 +14,37 @@ season("None").
 /* Plans */
 +!init: true
     <-  .print("The grasshopper is born");
-        addAgent;
+        addGrasshopper;
         !next.
 
-+!next: not died & season(Season)
-    <-  .send(climate, tell, grasshopperIsReady);
-        //-season(Season);
++!next: not died & season(Season) & .my_name(Me)
+    <-  grasshopperIsReady;
+        .print("The grasshopper is ready: ", Me);
         .abolish(season(_));
         .wait(season(NewSeason));
         .print("The new season is ", NewSeason);
         .wait(500);
-        .print("The grasshopper is ready");
-        .print("The grasshopper is thinking");
-        .send(climate, untell, grasshopperIsReady);
+        grasshopperIsNotReady;
+        .print("The grasshopper is thinking: ", Me);
         if(NewSeason == "Winter"){
             !eatFood;
-        }
-        else{
+        } else {
             generateRandom(R, 2);
-            //R = 0;
             if(R == 1){
                 !work;
-            }
-            else{
+            } else {
                 !play;
             }
         }.      
 
-+!play: not died
++!play: not died 
     <-  .print("The grasshopper is playing");
         played;
         !next.
 
 +!work: not died & food(X) 
     <-  .print("The grasshopper is working");
-        worked;
+        grasshopperWorked;
         Y = X + 1;
         -food(X);
         +food(Y);
@@ -55,24 +54,20 @@ season("None").
     <-  .print("The grasshopper food is: ", X);
         if(X > 0){
             .print("The grasshopper is eating");
-            ate;
             Y = X - 1;
             -food(X);
             +food(Y);
             !next;
         }
         else{
-            !negotiate;
+            !askFood;
         }.
 
-+!negotiate: not died & food(X) & X = 0
++!askFood: not died & food(X) & X = 0
     <-  .print("The grasshopper is negotiating");
-        .send(ant, achieve, startNegotiation[source(self)]).
-
-+!giveCounterProposal[source(Ant)]: not died
-    <-  .print("The grasshoper is giving a counter proposal");
-        generateRandom(R, 11);
-        .send(Ant, achieve, counterProposal(R)[source(self)]).
+        chooseAgentToNegotiate(Ag);
+        .print("The grasshopper is negotiating with ", Ag);
+        .send(Ag, achieve, startNegotiation).
 
 +!receiveFood[source(Ant)]: not died & food(X)
     <-  .print("The grasshopper is receiving food");
@@ -85,7 +80,6 @@ season("None").
     <-  .print("The grasshopper food is: ", X);
         if(X > 0){
             .print("The grasshopper is eating received food");
-            ate;
             Y = X - 1;
             -food(X);
             +food(Y);
@@ -94,7 +88,6 @@ season("None").
 
 +!death: true
     <-  .print("The grasshopper died");
+        removeGrasshopper;
         +died.
 
-{ include("$jacamoJar/templates/common-cartago.asl") }
-{ include("$jacamoJar/templates/common-moise.asl") }
