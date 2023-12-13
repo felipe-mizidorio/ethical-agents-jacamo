@@ -6,7 +6,6 @@
 /* Initial beliefs and rules */
 food(0).
 ~died.
-season("None").
 
 /* Initial goals */
 !init.
@@ -17,7 +16,7 @@ season("None").
         addGrasshopper;
         !next.
 
-+!next: not died & season(Season) & .my_name(Me)
++!next: not died & .my_name(Me)
     <-  grasshopperIsReady;
         .print("The grasshopper is ready: ", Me);
         .abolish(season(_));
@@ -60,7 +59,13 @@ season("None").
             !next;
         }
         else{
-            !askFood;
+            countAgentToNegotiate(AgentsToNegotiate);
+            if(AgentsToNegotiate > 0){
+                !askFood;
+            } else {
+                .print("No agents to negotiate");
+                !death;
+            }
         }.
 
 +!askFood: not died & food(X) & X = 0

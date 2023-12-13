@@ -170,6 +170,17 @@ public class BlackBoard extends Artifact {
     }
 
     @OPERATION
+    void countAgentToNegotiate(OpFeedbackParam<Integer> X) {
+        int index = 0;
+        for (Agent agent : this.antList) {
+            if (agent.isNegotiating == false) {
+                index++;
+            }
+        }
+        X.set(index);
+    }
+
+    @OPERATION
     void antIsNegotiating() {
         for (Agent agent : this.antList) {
             if (agent.getName().equals(getCurrentOpAgentId().getAgentName())) {
@@ -215,30 +226,6 @@ public class BlackBoard extends Artifact {
         R.set(rand.nextInt(bound)); 
     }
 
-    @OPERATION
-    void getRole(OpFeedbackParam<String> X) {
-        X.set(getCurrentOpAgentId().getAgentRole());
-    }
-
-    @OPERATION
-    boolean waitUntilEveryoneIsReady() {
-        int numberOfAgents = 4;
-        int counter = 0;
-        List<Agent> agentsList = new ArrayList<>();
-        agentsList.addAll(this.antList);
-        agentsList.addAll(this.grasshopperList);
-        for (Agent agent : agentsList) {
-            if (agent.getIsReady()) {
-                counter++;
-            }
-        }
-        if (counter == numberOfAgents) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
     public class Agent {
         private String type;
         private String name;
@@ -252,7 +239,7 @@ public class BlackBoard extends Artifact {
             this.name = name;
             this.balance = 0;
             this.playedTimes = 0;
-            this.isReady = true;
+            this.isReady = false;
             this.isNegotiating = false;
         }
 

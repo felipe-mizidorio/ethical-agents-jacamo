@@ -43,23 +43,23 @@
 
 <functional-specification>
     <scheme id="negotiationSch">
-        <goal id="negotiate">
-            <plan operator="sequence">
+        <goal id="negotiation">
+            <plan operator="parallel">
+                <goal id="negotiate"/>
                 <goal id="askFood"/>
-                <goal id="startNegotiation"/>
             </plan>
         </goal>
 
         <mission id="mDeontologic" min="1">
-            <goal id="startNegotiation"/>
+            <goal id="negotiate"/>
         </mission>
 
         <mission id="mConsequentialist" min="1">
-            <goal id="startNegotiation"/>
+            <goal id="negotiate"/>
         </mission>
 
         <mission id="mVirtueEthics" min="1">
-            <goal id="startNegotiation"/>
+            <goal id="negotiate"/>
         </mission>
 
         <mission id="mGrasshopper" min="1">
@@ -69,10 +69,10 @@
 </functional-specification>
 
 <normative-specification>
-    <norm id="n1" role="deontologic" type="obligation" mission="mDeontologic"/>
-    <norm id="n2" role="consequentialist" type="obligation" mission="mConsequentialist"/>
-    <norm id="n3" role="virtue_ethics" type="obligation"  mission="mVirtueEthics"/>
-    <norm id="n4" role="grasshopper" type="obligation" mission="mGrasshopper"/>
+    <norm id="n1" role="deontologic" type="permission" mission="mDeontologic"/>
+    <norm id="n2" role="consequentialist" type="permission" mission="mConsequentialist"/>
+    <norm id="n3" role="virtue_ethics" type="permission"  mission="mVirtueEthics"/>
+    <norm id="n4" role="grasshopper" type="permission" mission="mGrasshopper"/>
 </normative-specification>
 
 </organisational-specification>

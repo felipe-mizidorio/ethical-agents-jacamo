@@ -26,6 +26,7 @@ mas ethicalAgents {
   }
 
   agent grasshopper: grasshopper.asl {
+    instances: 10
     focus: w.board
   }
 

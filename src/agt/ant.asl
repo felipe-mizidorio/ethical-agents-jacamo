@@ -6,7 +6,6 @@
 /* Initial beliefs and rules */
 ~died.
 food(0).
-season("None").
 
 /* Initial goals */
 !init.
@@ -17,7 +16,7 @@ season("None").
         addAnt;
         !next.
 
-+!next: not died & season(Season) & .my_name(Me)
++!next: not died & .my_name(Me)
     <-  antIsReady;
         .print("The ant is ready: ", Me);
         .abolish(season(_));
@@ -26,8 +25,6 @@ season("None").
         .wait(500);
         antIsNotReady;
         .print("The ant is thinking: ", Me);
-        getRole(Role);
-        .print("The ant role is: ", Role);
         if(NewSeason == "Winter") {
             !eatFood;
         } else {
@@ -49,16 +46,14 @@ season("None").
             Y = X - 1;
             -food(X);
             +food(Y);
-            //!next;
-            !feast;
         } else {
             !death;
         }.
 
 +!feast: not died & food(X)
     <-  .print("The ant is feasting");
-        verifyIsNegotiating(isNegotiating);
-        if(isNegotiating == false){
+        verifyIsNegotiating(IsNegotiating);
+        if(IsNegotiating == false){
             Y = X - 1;
             -food(X);
             +food(Y);
@@ -68,7 +63,7 @@ season("None").
         }
         !next.
 
-+!startNegotiation[source(Ag)]: not died & food(X) & .my_name(Me) & commitment(Me, Mission, Sch) & Mission == mConsequentialist
++!startNegotiation[source(Ag)]: not died & food(X) & .my_name(antConsequentialist)
     <-  .print("The Consequencialist ant is starting a negotiation with ", Ag);
         setIsNegotiating(true);
         if(X > 0) {
@@ -76,17 +71,15 @@ season("None").
             if(Balance >= -1) {
                 !giveFood(Ag);
             } else {
-                Y = X - 1;
-                -food(X);
-                +food(Y);
                 .send(Ag, achieve, death);
+                !feast;
             }
         } else {
             .print("The ant has no food");
             .send(Ag, achieve, death);
         }.
 
-+!startNegotiation[source(Ag)]: not died & food(X) & .my_name(Me) & commitment(Me, Mission, Sch) & Mission == mDeontologic
++!startNegotiation[source(Ag)]: not died & food(X) & .my_name(antDeontologic)
     <-  .print("The Deontological ant is starting a negotiation with ", Ag);
         setIsNegotiating(true);
         if(X > 0) {
@@ -94,17 +87,15 @@ season("None").
             if(PlayedTimes <= 1) {
                 !giveFood(Ag);
             } else{
-                Y = X - 1;
-                -food(X);
-                +food(Y);
                 .send(Ag, achieve, death);
+                !feast;
             }
         } else {
             .print("The ant has no food");
             .send(Ag, achieve, death);
         }.
 
-+!startNegotiation[source(Ag)]: not died & food(X) & .my_name(Me) & commitment(Me, Mission, Sch) & Mission == mVirtueEthics
++!startNegotiation[source(Ag)]: not died & food(X) & .my_name(antVirtueEthics)
     <-  .print("The Virtue Ethics ant is starting a negotiation with ", Ag);
         setIsNegotiating(true);
         if(X > 0) {
@@ -113,10 +104,8 @@ season("None").
             if(Balance >= 0 | (Balance < 0 & PlayedTimes <= -1)) {
                 !giveFood(Ag);
             } else{
-                Y = X - 1;
-                -food(X);
-                +food(Y);
                 .send(Ag, achieve, death);
+                !feast;
             }
         } else {
             .print("The ant has no food");
@@ -128,7 +117,7 @@ season("None").
         Y = X - 1;
         -food(X);
         +food(Y);
-        .send(grasshopper, achieve, receiveFood).
+        .send(Ag, achieve, receiveFood).
 
 +!death: true
     <-  .print("The ant died");

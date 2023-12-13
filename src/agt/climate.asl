@@ -10,10 +10,13 @@
 
 /* Plans */
 +!waitAgents: true
-    <-  while(waitUntilEveryoneIsReady == false) {
-            .wait(1000);
-        };
-        .print("Agent climate: everybody is ready!");
+    <-  .wait(1000);
+        seasonIncrement;
+        verifySeasonCounter(X);
+        if(X == 1) {
+            .print("Agent climate: it is summer!");
+            .broadcast(tell, season("Summer"));
+        }
         !verifySeason.
 
 +!verifySeason : true
@@ -21,12 +24,12 @@
         verifySeason(Season);
         if(Season == "Winter") {
             .print("Agent climate: it is winter!");
-            .broadcast(tell, season(Season));
             .broadcast(untell, season("Summer"));
+            .broadcast(tell, season(Season));
         } else {
             .print("Agent climate: it is summer!");
-            .broadcast(tell, season(Season));
             .broadcast(untell, season("Winter"));
+            .broadcast(tell, season(Season));
         }
         .wait(1000);
         nextSeason;
