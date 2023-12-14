@@ -22,22 +22,20 @@
 
 <group-specification id="group1">
     <roles>
-        <role id="deontologic"      min="1" max="1"/>
-        <role id="consequentialist" min="1" max="1"/>
-        <role id="virtue_ethics"    min="1" max="1"/>
-        <role id="grasshopper"      min="1" max="1"/>
+        <role id="deontologic"      min="1"/>
+        <role id="consequentialist" min="1"/>
+        <role id="virtue_ethics"    min="1"/>
+        <role id="grasshopper"      min="1"/>
     </roles>
 
     <links>
         <link from="deontologic" to="grasshopper" type="communication" scope="intra-group" bi-dir="true"/>
         <link from="consequentialist" to="grasshopper" type="communication" scope="intra-group" bi-dir="true"/>
         <link from="virtue_ethics" to="grasshopper" type="communication" scope="intra-group" bi-dir="true"/>
+        <link from="grasshopper" to="deontologic" type="communication" scope="intra-group" bi-dir="true"/>
+        <link from="grasshopper" to="consequentialist" type="communication" scope="intra-group" bi-dir="true"/>
+        <link from="grasshopper" to="virtue_ethics" type="communication" scope="intra-group" bi-dir="true"/>
     </links>
-    <formation-constraints>
-        <compatibility from="deontologic" to="grasshopper" />
-        <compatibility from="consequentialist" to="grasshopper" />
-        <compatibility from="virtue_ethics" to="grasshopper" />
-    </formation-constraints>
 </group-specification>
 </structural-specification>
 
@@ -45,21 +43,29 @@
     <scheme id="negotiationSch">
         <goal id="negotiation">
             <plan operator="parallel">
-                <goal id="negotiate"/>
-                <goal id="askFood"/>
+                <goal id="receiveFood">
+                    <plan operator="sequence">
+                        <goal id="askFood"/>
+                    </plan>
+                </goal>
+                <goal id="analyzeProposal">
+                    <plan operator="sequence">
+                        <goal id="startNegotiation"/>
+                    </plan>
+                </goal>
             </plan>
         </goal>
 
         <mission id="mDeontologic" min="1">
-            <goal id="negotiate"/>
+            <goal id="startNegotiation"/>
         </mission>
 
         <mission id="mConsequentialist" min="1">
-            <goal id="negotiate"/>
+            <goal id="startNegotiation"/>
         </mission>
 
         <mission id="mVirtueEthics" min="1">
-            <goal id="negotiate"/>
+            <goal id="startNegotiation"/>
         </mission>
 
         <mission id="mGrasshopper" min="1">
@@ -69,10 +75,10 @@
 </functional-specification>
 
 <normative-specification>
-    <norm id="n1" role="deontologic" type="permission" mission="mDeontologic"/>
-    <norm id="n2" role="consequentialist" type="permission" mission="mConsequentialist"/>
-    <norm id="n3" role="virtue_ethics" type="permission"  mission="mVirtueEthics"/>
-    <norm id="n4" role="grasshopper" type="permission" mission="mGrasshopper"/>
+    <norm id="n1" type="permission" role="deontologic" mission="mDeontologic"/>
+    <norm id="n2" type="permission" role="consequentialist" mission="mConsequentialist"/>
+    <norm id="n3" type="permission" role="virtue_ethics"  mission="mVirtueEthics"/>
+    <norm id="n4" type="permission" role="grasshopper" mission="mGrasshopper"/>
 </normative-specification>
 
 </organisational-specification>

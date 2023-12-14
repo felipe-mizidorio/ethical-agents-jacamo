@@ -61,7 +61,8 @@ food(0).
         else{
             countAgentToNegotiate(AgentsToNegotiate);
             if(AgentsToNegotiate > 0){
-                !askFood;
+                // !askFood;
+                commitMission(mGrasshopper);
             } else {
                 .print("No agents to negotiate");
                 !death;
@@ -72,7 +73,16 @@ food(0).
     <-  .print("The grasshopper is negotiating");
         chooseAgentToNegotiate(Ag);
         .print("The grasshopper is negotiating with ", Ag);
-        .send(Ag, achieve, startNegotiation).
+        if(Ag == "antDeontologic") {
+            .send("antDeontologic", tell, permissao("mDeontologic"));
+        }
+        if(Ag == "antConsequentialist") {
+            .send("antConsequentialist", tell, permissao("mConsequentialist"));
+        }
+        if(Ag == "antVirtueEthics") {
+            .send("antVirtueEthics", tell, permissao("mVirtueEthics"));
+        }.
+        // .send(Ag, achieve, startNegotiation).
 
 +!receiveFood[source(Ant)]: not died & food(X)
     <-  .print("The grasshopper is receiving food");

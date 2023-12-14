@@ -63,6 +63,10 @@ food(0).
         }
         !next.
 
++permissao(Mission) <-
+    .print("Accept send the permition to negotiate, ", Mission);
+    commitMission(Mission).
+
 +!startNegotiation[source(Ag)]: not died & food(X) & .my_name(antConsequentialist)
     <-  .print("The Consequencialist ant is starting a negotiation with ", Ag);
         setIsNegotiating(true);
@@ -79,7 +83,7 @@ food(0).
             .send(Ag, achieve, death);
         }.
 
-+!startNegotiation[source(Ag)]: not died & food(X) & .my_name(antDeontologic)
++!startNegotiation[source(Ag)]: not died & food(X) & .my_name(Me) & commitment(Me, Mission, Sch) & Mission == mDeontologic
     <-  .print("The Deontological ant is starting a negotiation with ", Ag);
         setIsNegotiating(true);
         if(X > 0) {
@@ -101,7 +105,7 @@ food(0).
         if(X > 0) {
             verifyBalance(Balance, Ag);
             verifyPlayedTimes(PlayedTimes, Ag);
-            if(Balance >= 0 | (Balance < 0 & PlayedTimes <= -1)) {
+            if(Balance >= 0 | (Balance < 0 & PlayedTimes <= 1)) {
                 !giveFood(Ag);
             } else{
                 .send(Ag, achieve, death);
